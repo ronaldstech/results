@@ -1,4 +1,4 @@
-export default function ResultsPanel({ result }) {
+export default function ResultsPanel({ result, pdfLoading, onDownloadPdf }) {
   const decision = result.summary.decision.toLowerCase()
 
   return (
@@ -25,6 +25,9 @@ export default function ResultsPanel({ result }) {
             <p className="supporting-copy">{result.academic.name} / Term {result.academic.term} / Form {result.student.form}</p>
             {result.school?.motto && <p className="school-motto">{result.school.motto}</p>}
           </div>
+          <button className="download-button" type="button" onClick={onDownloadPdf} disabled={pdfLoading}>
+            <span aria-hidden="true">&#8595;</span>{pdfLoading ? 'Preparing PDF...' : 'Download PDF'}
+          </button>
         </div>
 
         <div className="summary-grid">

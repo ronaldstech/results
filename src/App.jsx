@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { downloadStudentReport } from './api/reportPdf'
 import { fetchStudentResult } from './api/results'
 import PortalFooter from './components/PortalFooter'
 import PortalHeader from './components/PortalHeader'
@@ -17,6 +18,7 @@ function App() {
   const [studentModalOpen, setStudentModalOpen] = useState(false)
   const [resultData, setResultData] = useState(null)
   const [reportLoading, setReportLoading] = useState(false)
+  const [pdfLoading, setPdfLoading] = useState(false)
   const directory = useStudentDirectory(selectedSchool, selectedForm)
 
   const handleSchoolChange = (event) => {
@@ -67,6 +69,20 @@ function App() {
     window.requestAnimationFrame(() => document.getElementById('student-search')?.focus())
   }
 
+  const downloadPdf = async () => {
+    if (!selectedStudent) return
+
+    directory.setError('')
+    setPdfLoading(true)
+    try {
+      await downloadStudentReport(selectedStudent.id, selectedStudent.student_reg)
+    } catch (requestError) {
+      directory.setError(requestError.message || 'Unable to download this report.')
+    } finally {
+      setPdfLoading(false)
+    }
+  }
+
   return (
     <main className="portal-shell">
       <PortalHeader selectedSchool={selectedSchool} schoolName={resultData?.school?.name} />
@@ -74,7 +90,7 @@ function App() {
       <section className="portal-content">
         <StudentPicker selectedSchool={selectedSchool} selectedForm={selectedForm} selectedStudent={selectedStudent} forms={forms} {...directory} onSchoolChange={handleSchoolChange} onFormChange={handleFormChange} onSearchChange={(event) => { directory.setSearchName(event.target.value); setSelectedStudent(null) }} onStudentSelect={handleStudentSelect} />
         {selectedStudent && studentModalOpen && <SelectedStudent student={selectedStudent} loading={reportLoading} onViewResults={viewResults} onChangeStudent={chooseAnotherStudent} onClose={() => setStudentModalOpen(false)} />}
-        {resultData && <ResultsPanel result={resultData} onClose={() => setResultData(null)} />}
+        {resultData && <ResultsPanel result={resultData} pdfLoading={pdfLoading} onDownloadPdf={downloadPdf} />}
       </section>
       <PortalFooter />
     </main>
