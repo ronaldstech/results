@@ -14,6 +14,7 @@ function App() {
   const [selectedSchool, setSelectedSchool] = useState('')
   const [selectedForm, setSelectedForm] = useState('')
   const [selectedStudent, setSelectedStudent] = useState(null)
+  const [studentModalOpen, setStudentModalOpen] = useState(false)
   const [resultData, setResultData] = useState(null)
   const [reportLoading, setReportLoading] = useState(false)
   const directory = useStudentDirectory(selectedSchool, selectedForm)
@@ -22,6 +23,7 @@ function App() {
     setSelectedSchool(event.target.value)
     setSelectedForm('')
     setSelectedStudent(null)
+    setStudentModalOpen(false)
     setResultData(null)
     directory.resetDirectory('')
   }
@@ -30,12 +32,14 @@ function App() {
     const form = event.target.value
     setSelectedForm(form)
     setSelectedStudent(null)
+    setStudentModalOpen(false)
     setResultData(null)
     directory.resetDirectory(form)
   }
 
   const handleStudentSelect = (student) => {
     setSelectedStudent(student)
+    setStudentModalOpen(true)
     directory.setSearchName(student.name)
     setResultData(null)
   }
@@ -47,6 +51,7 @@ function App() {
     setReportLoading(true)
     try {
       setResultData(await fetchStudentResult(selectedStudent.id))
+      setStudentModalOpen(false)
     } catch (requestError) {
       directory.setError(requestError.message || 'Unable to open this report.')
     } finally {
@@ -54,14 +59,22 @@ function App() {
     }
   }
 
+  const chooseAnotherStudent = () => {
+    setSelectedStudent(null)
+    setStudentModalOpen(false)
+    setResultData(null)
+    directory.setSearchName('')
+    window.requestAnimationFrame(() => document.getElementById('student-search')?.focus())
+  }
+
   return (
     <main className="portal-shell">
-      <PortalHeader />
+      <PortalHeader selectedSchool={selectedSchool} schoolName={resultData?.school?.name} />
 
       <section className="portal-content">
         <StudentPicker selectedSchool={selectedSchool} selectedForm={selectedForm} selectedStudent={selectedStudent} forms={forms} {...directory} onSchoolChange={handleSchoolChange} onFormChange={handleFormChange} onSearchChange={(event) => { directory.setSearchName(event.target.value); setSelectedStudent(null) }} onStudentSelect={handleStudentSelect} />
-        {selectedStudent && <SelectedStudent student={selectedStudent} loading={reportLoading} onViewResults={viewResults} />}
-        {resultData && <ResultsPanel result={resultData} />}
+        {selectedStudent && studentModalOpen && <SelectedStudent student={selectedStudent} loading={reportLoading} onViewResults={viewResults} onChangeStudent={chooseAnotherStudent} onClose={() => setStudentModalOpen(false)} />}
+        {resultData && <ResultsPanel result={resultData} onClose={() => setResultData(null)} />}
       </section>
       <PortalFooter />
     </main>
