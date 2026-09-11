@@ -44,7 +44,11 @@ export default function StudentPicker({
           <label htmlFor="student-search">Step 02 &nbsp; Search your name</label>
           <input id="student-search" value={searchName} onChange={onSearchChange} placeholder={selectedForm ? 'Type your name...' : 'Select a class first'} disabled={!selectedForm || loading} />
         </div>
-        {loading && <p className="loading-state">Loading {selectedSchool} school students from Form {selectedForm}...</p>}
+        {loading && <div className="loading-state" role="status" aria-live="polite">
+          <div className="loading-topline"><span className="loading-spinner" aria-hidden="true"></span><strong>Preparing your class list</strong><span className="loading-dots" aria-hidden="true">...</span></div>
+          <p>Finding {selectedSchool} school students in Form {selectedForm}</p>
+          <div className="loading-track" aria-hidden="true"><span></span></div>
+        </div>}
         {error && <p className="error-message" role="alert">{error}</p>}
         {selectedForm && !loading && !error && <div className="student-list" role="listbox" aria-label="Students matching your search">
           {filteredStudents.length > 0 ? filteredStudents.map((student) => (

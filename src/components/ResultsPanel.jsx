@@ -36,7 +36,7 @@ export default function ResultsPanel({ result, pdfLoading, onDownloadPdf }) {
         </div>
 
         <div className="results-table-wrap"><table><thead><tr><th>Subject</th><th>Final</th><th>Grade</th><th>Position</th><th>Remark</th><th>Teacher</th></tr></thead><tbody>
-          {result.subjects.map((subject) => <tr key={subject.subject}><td>{subject.subject}</td><td>{subject.final ?? '-'}</td><td>{subject.grade ?? '-'}</td><td>{subject.position ?? '-'}</td><td>{subject.remark || '-'}</td><td>{subject.teacher || '-'}</td></tr>)}
+          {result.subjects.map((subject) => <tr key={subject.subject}><td data-label="Subject">{subject.subject}</td><td data-label="Final">{subject.final ?? '-'}</td><td data-label="Grade">{subject.grade ?? '-'}</td><td data-label="Position">{subject.position ?? '-'}</td><td data-label="Remark">{subject.remark || '-'}</td><td data-label="Teacher">{subject.teacher || '-'}</td></tr>)}
         </tbody></table></div>
 
         <div className="remarks-grid">
