@@ -1,6 +1,8 @@
 # SMIS Student Results Portal
 
-Students can sign in with their registration number and surname, then download only their own current report. The PHP API keeps the student ID in the server session; the browser cannot choose another student or class.
+Students choose a form, search the students returned by the API, select a student, and view that student's current result in the browser.
+
+The student picker loads class records from `https://lynxtechmedia.com/ronaldstech/smis-api/v1/students.php?form=1&school=day`. The results view requests JSON for the selected student from `https://lynxtechmedia.com/ronaldstech/smis-api/v1/results.php?student_id=1033` and renders the subject marks in the browser.
 
 ## Local setup
 
@@ -13,6 +15,13 @@ VITE_API_URL=https://your-host.example/smis-api/api/index.php
 For local Vite development, the PHP API must allow `http://localhost:5173` or `http://127.0.0.1:5173` as configured in `src/smis-api/api/index.php`. PHP, MySQL, and the existing SMIS database are required for the student flow.
 
 The current database has no student password column, so the initial sign-in uses registration number plus surname. Before public deployment, add a dedicated password or one-time access-code field to `students`, replace this temporary check with a password hash (`password_hash`/`password_verify`), and add rate limiting.
+
+## Frontend structure
+
+- `src/api/` contains HTTP functions for student and result requests.
+- `src/hooks/` contains the student directory loading and filtering state.
+- `src/components/` contains the portal header, student picker, selected student, result panel, and footer.
+- `src/App.jsx` coordinates the page state and event handlers.
 
 ## Frontend commands
 

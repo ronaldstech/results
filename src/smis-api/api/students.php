@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once "../db.php";
 
 $form = filter_input(INPUT_GET, 'form', FILTER_VALIDATE_INT);
+$school = strtolower(trim($_GET['school'] ?? ''));
 
 if ($form === false || $form === null || $form < 1) {
     http_response_code(400);
@@ -24,10 +25,20 @@ if ($form === false || $form === null || $form < 1) {
     exit;
 }
 
+if (!in_array($school, ['day', 'open'], true)) {
+    http_response_code(400);
+    echo json_encode([
+        "status" => false,
+        "message" => "A valid school is required: day or open",
+        "data" => []
+    ]);
+    exit;
+}
+
 $stmt = $db->prepare(
     "SELECT id, first, middle, last, form, gender, student_reg, school
      FROM students
-     WHERE form = ? AND status = 'active'
+     WHERE form = ? AND school = ? AND status = 'active'
      ORDER BY last ASC, first ASC"
 );
 
@@ -41,7 +52,7 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("i", $form);
+$stmt->bind_param("is", $form, $school);
 $stmt->execute();
 $result = $stmt->get_result();
 $students = [];
@@ -58,6 +69,7 @@ $stmt->close();
 echo json_encode([
     "status" => true,
     "form" => $form,
+    "school" => $school,
     "count" => count($students),
     "data" => $students
 ]);
