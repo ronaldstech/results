@@ -6,6 +6,7 @@ import PortalHeader from './components/PortalHeader'
 import ResultsPanel from './components/ResultsPanel'
 import SelectedStudent from './components/SelectedStudent'
 import StudentPicker from './components/StudentPicker'
+import TourGuide from './components/TourGuide'
 import { useStudentDirectory } from './hooks/useStudentDirectory'
 import './App.css'
 
@@ -19,6 +20,7 @@ function App() {
   const [resultData, setResultData] = useState(null)
   const [reportLoading, setReportLoading] = useState(false)
   const [pdfLoading, setPdfLoading] = useState(false)
+  const [tourOpen, setTourOpen] = useState(() => localStorage.getItem('smis-tour-complete') !== 'true')
   const directory = useStudentDirectory(selectedSchool, selectedForm)
 
   const handleSchoolChange = (event) => {
@@ -83,9 +85,14 @@ function App() {
     }
   }
 
+  const closeTour = () => {
+    localStorage.setItem('smis-tour-complete', 'true')
+    setTourOpen(false)
+  }
+
   return (
     <main className="portal-shell">
-      <PortalHeader selectedSchool={selectedSchool} schoolName={resultData?.school?.name} />
+      <PortalHeader selectedSchool={selectedSchool} schoolName={resultData?.school?.name} onStartTour={() => setTourOpen(true)} />
 
       <section className="portal-content">
         <StudentPicker selectedSchool={selectedSchool} selectedForm={selectedForm} selectedStudent={selectedStudent} forms={forms} {...directory} onSchoolChange={handleSchoolChange} onFormChange={handleFormChange} onSearchChange={(event) => { directory.setSearchName(event.target.value); setSelectedStudent(null) }} onStudentSelect={handleStudentSelect} />
@@ -93,6 +100,7 @@ function App() {
         {resultData && <ResultsPanel result={resultData} pdfLoading={pdfLoading} onDownloadPdf={downloadPdf} />}
       </section>
       <PortalFooter />
+      <TourGuide open={tourOpen} onClose={closeTour} />
     </main>
   )
 }

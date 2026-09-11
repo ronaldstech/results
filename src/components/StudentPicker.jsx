@@ -30,19 +30,19 @@ export default function StudentPicker({
         </div>
         <div className="step-heading"><span>01</span><div><p className="eyebrow">Start here</p><h3>Find your student record</h3></div></div>
         <label htmlFor="school-select">School</label>
-        <select id="school-select" value={selectedSchool} onChange={onSchoolChange}>
+        <select id="school-select" data-tour="school" value={selectedSchool} onChange={onSchoolChange}>
           <option value="">Choose a school</option>
           <option value="day">Day school</option>
           <option value="open">Open school</option>
         </select>
         <label htmlFor="form-select">Class</label>
-        <select id="form-select" value={selectedForm} onChange={onFormChange} disabled={!selectedSchool}>
+        <select id="form-select" data-tour="form" value={selectedForm} onChange={onFormChange} disabled={!selectedSchool}>
           <option value="">Choose a form</option>
           {forms.map((form) => <option key={form} value={form}>Form {form}</option>)}
         </select>
         <div className={`search-wrap ${!selectedForm ? 'is-disabled' : ''}`}>
           <label htmlFor="student-search">Step 02 &nbsp; Search your name</label>
-          <input id="student-search" value={searchName} onChange={onSearchChange} placeholder={selectedForm ? 'Type your name...' : 'Select a class first'} disabled={!selectedForm || loading} />
+          <input id="student-search" data-tour="search" value={searchName} onChange={onSearchChange} placeholder={selectedForm ? 'Type your name...' : 'Select a class first'} disabled={!selectedForm || loading} />
         </div>
         {loading && <div className="loading-state" role="status" aria-live="polite">
           <div className="loading-topline"><span className="loading-spinner" aria-hidden="true"></span><strong>Preparing your class list</strong><span className="loading-dots" aria-hidden="true">...</span></div>
